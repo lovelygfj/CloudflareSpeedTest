@@ -6,8 +6,6 @@
 [![GitHub Star](https://img.shields.io/github/stars/XIU2/CloudflareSpeedTest.svg?style=flat-square&label=Star&color=00ADD8&logo=github)](https://github.com/XIU2/CloudflareSpeedTest/)
 [![GitHub Fork](https://img.shields.io/github/forks/XIU2/CloudflareSpeedTest.svg?style=flat-square&label=Fork&color=00ADD8&logo=github)](https://github.com/XIU2/CloudflareSpeedTest/)
 
-## 前排提醒：[关于下载测速不稳定/不可用的 情况说明 及 解决方法...](https://github.com/XIU2/CloudflareSpeedTest/issues/168)
-
 国外很多网站都在使用 Cloudflare CDN，但分配给中国内地访客的 IP 并不友好（延迟高、丢包多、速度慢）。  
 虽然 Cloudflare 公开了所有 [IP 段](https://www.cloudflare.com/ips/) ，但想要在这么多 IP 中找到适合自己的，怕是要累死，于是就有了这个软件。  
 
@@ -16,14 +14,16 @@
 > _分享我其他开源项目：[**TrackersList.com** - 全网热门 BT Tracker 列表！有效提高 BT 下载速度~](https://github.com/XIU2/TrackersListCollection) <img src="https://img.shields.io/github/stars/XIU2/TrackersListCollection.svg?style=flat-square&label=Star&color=4285dd&logo=github" height="16px" />_   
 > _[**UserScript** - 🐵 Github 高速下载、知乎增强、自动无缝翻页、护眼模式 等十几个**油猴脚本**！](https://github.com/XIU2/UserScript)<img src="https://img.shields.io/github/stars/XIU2/UserScript.svg?style=flat-square&label=Star&color=4285dd&logo=github" height="16px" />_   
 
-> 本项目也支持对**其他 CDN / 网站 IP** 延迟测速（如：[AWS CloudFront CDN](https://github.com/XIU2/CloudflareSpeedTest/issues/180)），但下载测速需自行寻找地址。
+> 本项目也支持对**其他 CDN / 网站 IP** 延迟测速（如：[CloudFront](https://github.com/XIU2/CloudflareSpeedTest/issues/180)、[Gcore](https://api.gcdn.co/cdn/public-ip-list) CDN），但下载测速需自行寻找地址
+
+> 对于**代理套 Cloudflare CDN** 的用户，须知这应为**备用方案**，而不应该是**唯一方案**，请勿过度依赖 [#217](https://github.com/XIU2/CloudflareSpeedTest/issues/217) [#188](https://github.com/XIU2/CloudflareSpeedTest/issues/188)
 
 ****
 ## \# 快速使用
 
 ### 下载运行
 
-1. 下载编译好的可执行文件 [蓝奏云](https://pan.lanzouq.com/b0742hkxe) / [Github](https://github.com/XIU2/CloudflareSpeedTest/releases) 并解压。  
+1. 下载编译好的可执行文件 [蓝奏云](https://pan.lanzouv.com/b0742hkxe) / [Github](https://github.com/XIU2/CloudflareSpeedTest/releases) 并解压。  
 2. 双击运行 `CloudflareST.exe` 文件（Windows 系统），等待测速完成...  
 
 <details>
@@ -34,17 +34,17 @@
 以下命令仅为示例，版本号和文件名请前往 [**Releases**](https://github.com/XIU2/CloudflareSpeedTest/releases) 查看。
 
 ``` yaml
-# 如果是第一次使用，则建议创建新文件夹（后续更新请跳过该步骤）
+# 如果是第一次使用，则建议创建新文件夹（后续更新时，跳过该步骤）
 mkdir CloudflareST
 
 # 进入文件夹（后续更新，只需要从这里重复下面的下载、解压命令即可）
 cd CloudflareST
 
 # 下载 CloudflareST 压缩包（自行根据需求替换 URL 中 [版本号] 和 [文件名]）
-wget -N https://download.fastgit.org/XIU2/CloudflareSpeedTest/releases/download/v2.0.3/CloudflareST_linux_amd64.tar.gz
-# 考虑到国内直接从 Github 下载速度很慢，这里替换为镜像站了，如果还是下载很慢/无法下载，那就试试下面这几个镜像：
-# wget -N https://gh.xiu.workers.dev/https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.0.3/CloudflareST_linux_amd64.tar.gz
-# wget -N https://ghproxy.com/https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.0.3/CloudflareST_linux_amd64.tar.gz
+wget -N https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.1.0/CloudflareST_linux_amd64.tar.gz
+# 如果你是在国内服务器上下载，那么请使用下面这几个镜像加速：
+# wget -N https://download.fastgit.org/XIU2/CloudflareSpeedTest/releases/download/v2.1.0/CloudflareST_linux_amd64.tar.gz
+# wget -N https://ghproxy.com/https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.1.0/CloudflareST_linux_amd64.tar.gz
 # 如果下载失败的话，尝试删除 -N 参数（如果是为了更新，则记得提前删除旧压缩包 rm CloudflareST_linux_amd64.tar.gz ）
 
 # 解压（不需要删除旧文件，会直接覆盖，自行根据需求替换 文件名）
@@ -61,7 +61,7 @@ chmod +x CloudflareST
 ```
 
 > 如果平**均延迟非常低**（如 0.xx），则说明 CloudflareST **测速时走了代理**，请先关闭代理软件后再测速。  
-> 如果在**路由器**上运行（如 OpenWrt），请先关闭路由器内的代理，否则测速结果会**不准确且无法使用**。
+> 如果在**路由器**上运行，建议先关闭路由器内的代理（或将其排除），否则测速结果可能会**不准确/无法使用**。
 
 </details>
 
@@ -88,10 +88,11 @@ IP 地址           已发送  已接收  丢包率  平均延迟  下载速度 
 ...
 
 # 如果平均延迟非常低（如 0.xx），则说明 CloudflareST 测速时走了代理，请先关闭代理软件后再测速。
-# 如果延迟很低 (几十ms)，且你也不是移动 (香港直连)，那么你就是遇到假墙 IP 了，记得加上 -tll 参数。
-# 如果在路由器上运行（如 OpenWrt），请先关闭路由器内的代理，否则测速结果会不准确且无法使用。
+# 如果在路由器上运行，请先关闭路由器内的代理（或将其排除），否则测速结果可能会不准确/无法使用。
 
 # 因为每次测速都是在每个 IP 段中随机 IP，所以每次的测速结果都不可能相同，这是正常的！
+
+# 注意！我发现电脑开机后第一次测速延迟会明显偏高，后续测速都正常，建议大家开机后第一次随便测几个 IP 后再正式开始测速。
 
 # 软件是先 延迟测速并按从低到高排序后，再从 最低延迟的 IP 开始下载测速的，所以：
 ```
@@ -126,30 +127,33 @@ https://github.com/XIU2/CloudflareSpeedTest
         延迟测速次数；单个 IP 延迟测速次数，为 1 时将过滤丢包的IP，TCP协议；(默认 4 次)
     -tp 443
         指定测速端口；延迟测速/下载测速时使用的端口；(默认 443 端口)
+
     -dn 10
         下载测速数量；延迟测速并排序后，从最低延迟起下载测速的数量；(默认 10 个)
     -dt 10
         下载测速时间；单个 IP 下载测速最长时间，不能太短；(默认 10 秒)
     -url https://cf.xiu2.xyz/url
         下载测速地址；用来下载测速的 Cloudflare CDN 文件地址，默认地址不保证可用性，建议自建；
+
     -tl 200
         平均延迟上限；只输出低于指定平均延迟的 IP，可与其他上限/下限搭配；(默认 9999 ms)
     -tll 40
-        平均延迟下限；只输出高于指定平均延迟的 IP，可与其他上限/下限搭配、过滤假墙 IP；(默认 0 ms)
+        平均延迟下限；只输出高于指定平均延迟的 IP，可与其他上限/下限搭配；(默认 0 ms)
     -sl 5
         下载速度下限；只输出高于指定下载速度的 IP，凑够指定数量 [-dn] 才会停止测速；(默认 0.00 MB/s)
+
     -p 10
         显示结果数量；测速后直接显示指定数量的结果，为 0 时不显示结果直接退出；(默认 10 个)
     -f ip.txt
         IP段数据文件；如路径含有空格请加上引号；支持其他 CDN IP段；(默认 ip.txt)
     -o result.csv
         写入结果文件；如路径含有空格请加上引号；值为空时不写入文件 [-o ""]；(默认 result.csv)
+
     -dd
         禁用下载测速；禁用后测速结果会按延迟排序 (默认按下载速度排序)；(默认 启用)
-    -ipv6
-        IPv6测速模式；确保 IP 段数据文件内只包含 IPv6 IP段，软件不支持同时测速 IPv4+IPv6；(默认 IPv4)
     -allip
         测速全部的IP；对 IP 段中的每个 IP (仅支持 IPv4) 进行测速；(默认 每个 IP 段随机测速一个 IP)
+
     -v
         打印程序版本+检查版本更新
     -h
@@ -176,9 +180,15 @@ Windows 要指定参数需要在 CMD 中运行，或者把参数添加到快捷�
 
 很多人打开 CMD 以**绝对路径**运行 CloudflareST 会报错，这是因为默认的 `-f ip.txt` 参数是相对路径，需要指定绝对路径的 ip.txt 才行，但这样毕竟太麻烦了，因此还是建议进入 CloudflareST 程序目录下，以**相对路径**方式运行：
 
+**方式 一**：
 1. 打开 CloudflareST 程序所在目录
 2. 空白处按下 <kbd>Shift + 鼠标右键</kbd> 显示右键菜单
 3. 选择 **\[在此处打开命令窗口\]** 来打开 CMD 窗口，此时默认就位于当前目录下
+4. 输入带参数的命令，如：`CloudflareST.exe -tll 50 -tl 200`即可运行
+
+**方式 二**：
+1. 打开 CloudflareST 程序所在目录
+2. 直接在文件夹地址栏中全选并输入 `cmd` 回车来打开 CMD 窗口，此时默认就位于当前目录下
 4. 输入带参数的命令，如：`CloudflareST.exe -tll 50 -tl 200`即可运行
 
 > 当然你也可以随便打开一个 CMD 窗口，然后输入如 `cd /d "D:\Program Files\CloudflareST"` 来进入程序目录
@@ -219,14 +229,15 @@ D:\ABC\CloudflareST\CloudflareST.exe -n 500 -t 4 -dn 20 -dt 5 -o " "
 
 ****
 ``` bash
-# 测速 IPv4 时，需要指定 IPv4 数据文件（-f 默认值就是 ip.txt，所以该参数可以省略）
+# 测速 IPv4 时，需要指定 IPv4 数据文件（-f 默认值就是 ip.txt，所以该参数可省略）
 CloudflareST.exe -f ip.txt
 
-# 测速 IPv6 时，需要指定 IPv6 数据文件( ipv6.txt ) 的同时再加上 -ipv6 参数
-CloudflareST.exe -f ipv6.txt -ipv6
+# 测速 IPv6 时，需要指定 IPv6 数据文件（v2.1.0 版本后支持 IPv4+IPv6 混合测速并移除了 -ipv6 参数）
+CloudflareST.exe -f ipv6.txt
 ```
 
 > 测速 IPv6 时，可能会注意到每次测速数量都不一样，了解原因： [#120](https://github.com/XIU2/CloudflareSpeedTest/issues/120)  
+> 因为 IPv6 太多（以亿为单位），且绝大部分 IP 段压根未启用，所以我只扫了一部分可用的 IPv6 段写到 `ipv6.txt` 文件中，有兴趣的可以自行扫描增删，ASN 数据源来自：[bgp.he.net](https://bgp.he.net/AS13335#_prefixes6)
 
 </details>
 
@@ -302,14 +313,14 @@ CloudflareST.exe -tp 80 -url http://xxx/xxx
 
 ****
 
-#### \# 自定义测速条件
+#### \# 自定义测速条件（指定 延迟/下载速度 的目标范围）
 
 <details>
 <summary><code><strong>「 点击展开 查看内容 」</strong></code></summary>
 
 ****
 
-- 指定 **[平均延迟下限]** 条件（用于过滤**被假蔷的 IP**，这类 IP 都被 TCP 劫持，因此延迟很低只有几十ms）
+- 指定 **[平均延迟下限]** 条件
 
 ``` bash
 # 平均延迟下限：40 ms （一般除了移动直连香港外，几乎不存在低于 100ms 的，自行测试适合的下限延迟）
@@ -441,9 +452,24 @@ CloudflareST.exe -f 1.txt
 
 ****
 
+## 衍生项目
+
+- _https://github.com/xianshenglu/cloudflare-ip-tester-app_  
+_**CloudflareST 安卓版 APP [#202](https://github.com/XIU2/CloudflareSpeedTest/issues/202)**_
+
+- _https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest_  
+_**CloudflareST OpenWrt 路由器插件版 [#174](https://github.com/XIU2/CloudflareSpeedTest/issues/174)**_
+
+- _https://github.com/immortalwrt-collections/openwrt-cdnspeedtest_  
+_**CloudflareST OpenWrt 原生编译版本 [#64](https://github.com/XIU2/CloudflareSpeedTest/discussions/64)**_
+
+> _此处仅收集了在本项目 Issues 中宣传过的部分 CloudflareST 相关衍生项目，如果有遗漏可以告诉我~_  
+
+****
+
 ## 感谢项目
 
-* https://github.com/Spedoske/CloudflareScanner
+- _https://github.com/Spedoske/CloudflareScanner_
 
 > _因为该项目已经很长时间没更新了，而我又产生了很多功能需求，所以我临时学了下 Go 语言就上手了（菜）..._  
 > _本软件基于该项目制作，但**已添加大量功能及修复 BUG**，并根据大家的使用反馈积极添加、优化功能（闲）..._
