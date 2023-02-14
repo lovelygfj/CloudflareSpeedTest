@@ -41,10 +41,10 @@ mkdir CloudflareST
 cd CloudflareST
 
 # 下载 CloudflareST 压缩包（自行根据需求替换 URL 中 [版本号] 和 [文件名]）
-wget -N https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.0/CloudflareST_linux_amd64.tar.gz
+wget -N https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.2/CloudflareST_linux_amd64.tar.gz
 # 如果你是在国内服务器上下载，那么请使用下面这几个镜像加速：
-# wget -N https://download.fastgit.org/XIU2/CloudflareSpeedTest/releases/download/v2.2.0/CloudflareST_linux_amd64.tar.gz
-# wget -N https://ghproxy.com/https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.0/CloudflareST_linux_amd64.tar.gz
+# wget -N https://download.fastgit.org/XIU2/CloudflareSpeedTest/releases/download/v2.2.2/CloudflareST_linux_amd64.tar.gz
+# wget -N https://ghproxy.com/https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.2/CloudflareST_linux_amd64.tar.gz
 # 如果下载失败的话，尝试删除 -N 参数（如果是为了更新，则记得提前删除旧压缩包 rm CloudflareST_linux_amd64.tar.gz ）
 
 # 解压（不需要删除旧文件，会直接覆盖，自行根据需求替换 文件名）
@@ -71,7 +71,7 @@ chmod +x CloudflareST
 
 ### 结果示例
 
-测速完毕后，默认会显示**最快的 10 个 IP**，示例（我联通白天测速结果）：
+测速完毕后，默认会显示**最快的 10 个 IP**，示例：
 
 ``` bash
 IP 地址           已发送  已接收  丢包率  平均延迟  下载速度 (MB/s)
@@ -92,9 +92,15 @@ IP 地址           已发送  已接收  丢包率  平均延迟  下载速度 
 
 # 因为每次测速都是在每个 IP 段中随机 IP，所以每次的测速结果都不可能相同，这是正常的！
 
-# 注意！我发现电脑开机后第一次测速延迟会明显偏高，后续测速都正常，建议大家开机后第一次随便测几个 IP 后再正式开始测速。
+# 注意！我发现电脑开机后第一次测速延迟会明显偏高（手动 TCPing 也一样），后续测速都正常
+# 因此建议大家开机后第一次正式测速前，先随便测几个 IP（无需等待延迟测速完成，只要进度条动了就可以直接关了）
 
-# 软件是先 延迟测速并按从低到高排序后，再从 最低延迟的 IP 开始下载测速的，所以：
+# 软件在 默认参数 下的整个流程大概步骤：
+# 1. 延迟测速（默认 TCPing 模式，HTTPing 模式需要手动加上参数）
+# 2. 延迟排序（延迟从低到高排序，不同丢包率的会分开独立排序，因此可能会有一些延迟低但丢包的 IP 被排到后面）
+# 3. 下载测速（从延迟最低的 IP 开始依次下载测速，默认测够 10 个就会停止）
+# 4. 速度排序（速度从高到低排序）
+# 5. 输出结果（可依靠参数控制是否输出到命令行(-p 0)/文件(-o "")）
 ```
 
 测速结果第一行就是**既下载速度最快、又平均延迟最低的最快 IP**！至于拿来干嘛？取决于你~
@@ -136,6 +142,8 @@ https://github.com/XIU2/CloudflareSpeedTest
 
     -httping
         切换测速模式；延迟测速模式改为 HTTP 协议，所用测试地址为 [-url] 参数；(默认 TCPing)
+        注意：HTTPing 本质上也算一种 网络扫描 行为，因此如果你在服务器上面运行，需要降低并发(-n)，否则可能会被一些严格的商家暂停服务。
+        如果你遇到 HTTPing 首次测速可用 IP 数量正常，后续测速越来越少甚至直接为 0，但停一段时间后又恢复了的情况，那么也可能是被 运营商、Cloudflare CDN 认为你在网络扫描而 触发临时限制机制，因此才会过一会儿就恢复了，建议降低并发(-n)减少这种情况的发生。
     -httping-code 200
         有效状态代码；HTTPing 延迟测速时网页返回的有效 HTTP 状态码，仅限一个；(默认 200 301 302)
     -cfcolo HKG,KHH,NRT,LAX,SEA,SJC,FRA,MAD
@@ -266,7 +274,7 @@ TCP 协议耗时更短、消耗资源更少，超时时间为 1 秒，该协议�
 HTTP 协议适用于快速测试某域名指向某 IP 时是否可以访问，超时时间为 2 秒。  
 同一个 IP，各协议去 Ping 得到的延迟一般为：**ICMP < TCP < HTTP**，越靠右对丢包等网络波动越敏感。
 
-> 注意：HTTPing 本质上也算一种**网络扫描**行为，因此如果你在服务器上面运行，需要**降低并发**(`-n`)，否则可能会被一些严格的商家暂停服务。
+> 注意：HTTPing 本质上也算一种**网络扫描**行为，因此如果你在服务器上面运行，需要**降低并发**(`-n`)，否则可能会被一些严格的商家暂停服务。如果你遇到 HTTPing 首次测速可用 IP 数量正常，后续测速越来越少甚至直接为 0，但停一段时间后又恢复了的情况，那么也可能是被 运营商、Cloudflare CDN 认为你在网络扫描而**触发临时限制机制**，因此才会过一会儿就恢复了，建议**降低并发**(`-n`)减少这种情况的发生。
 
 ``` bash
 # 只需加上 -httping 参数即可切换到 HTTP 协议延迟测速模式
@@ -279,8 +287,8 @@ CloudflareST.exe -httping -httping-code 200
 CloudflareST.exe -httping -url https://cf.xiu2.xyz/url
 
 # 注意：如果测速地址为 HTTP 协议，记得加上 -tp 80（这个参数会影响 延迟测速/下载测速 时使用的端口）
-# 同理，如果要测速 80 端口，那么也需要加上 -url 参数来指定一个 http:// 协议的地址才行（默认测速地址是 HTTPS 的）
-CloudflareST.exe -httping -tp 80 -url http://xxx/xxx
+# 同理，如果要测速 80 端口，那么也需要加上 -url 参数来指定一个 http:// 协议的地址才行（且该地址不会强制重定向至 HTTPS），如果是非 80 443 端口，那么需要确定该下载测速地址是否支持通过该端口访问。
+CloudflareST.exe -httping -tp 80 -url http://cdn.cloudflare.steamstatic.com/steam/apps/5952/movie_max.webm
 ```
 
 </details>
@@ -354,6 +362,26 @@ C:\abc\CloudflareST.exe -f C:\abc\4.txt -o C:\abc\result.csv -dd
 
 ****
 
+#### \# 测速其他端口
+
+<details>
+<summary><code><strong>「 点击展开 查看内容 」</strong></code></summary>
+
+****
+
+``` bash
+# 如果你想要测速非默认 443 的其他端口，则需要通过 -tp 参数指定（该参数会影响 延迟测速/下载测速 时使用的端口）
+
+# 如果要延迟测速 80 端口+下载测速（如果 -dd 禁用了下载测速则不需要），那么还需要指定 http:// 协议的下载测速地址才行（且该地址不会强制重定向至 HTTPS，因为那样就变成 443 端口了）
+CloudflareST.exe -tp 80 -url http://cdn.cloudflare.steamstatic.com/steam/apps/5952/movie_max.webm
+
+# 如果是非 80 443 的其他端口，那么需要确定你使用的下载测速地址是否支持通过该非标端口访问。
+```
+
+</details>
+
+****
+
 #### \# 自定义测速地址
 
 <details>
@@ -367,8 +395,8 @@ C:\abc\CloudflareST.exe -f C:\abc\4.txt -o C:\abc\result.csv -dd
 # 地址要求：可以直接下载、文件大小超过 200MB、用的是 Cloudflare CDN
 CloudflareST.exe -url https://cf.xiu2.xyz/url
 
-# 注意：如果测速地址为 HTTP 协议，记得加上 -tp 80（这个参数会影响 延迟测速/下载测速 时使用的端口）
-CloudflareST.exe -tp 80 -url http://xxx/xxx
+# 注意：如果测速地址为 HTTP 协议（该地址不能强制重定向至 HTTPS），记得加上 -tp 80（这个参数会影响 延迟测速/下载测速 时使用的端口），如果是非 80 443 端口，那么需要确定下载测速地址是否支持通过该端口访问。
+CloudflareST.exe -tp 80 -url http://cdn.cloudflare.steamstatic.com/steam/apps/5952/movie_max.webm
 ```
 
 </details>
@@ -381,6 +409,8 @@ CloudflareST.exe -tp 80 -url http://xxx/xxx
 <summary><code><strong>「 点击展开 查看内容 」</strong></code></summary>
 
 ****
+
+> 注意：延迟测速进度条右边的**可用数量**，仅指延迟测速过程中**未超时的 IP 数量**，和延迟上下限条件无关。
 
 - 指定 **[平均延迟下限]** 条件
 
@@ -550,6 +580,65 @@ _**CloudflareST OpenWrt 原生编译版本 [#64](https://github.com/XIU2/Cloudfl
 
 > _因为该项目已经很长时间没更新了，而我又产生了很多功能需求，所以我临时学了下 Go 语言就上手了（菜）..._  
 > _本软件基于该项目制作，但**已添加大量功能及修复 BUG**，并根据大家的使用反馈积极添加、优化功能（闲）..._
+
+****
+
+## 手动编译
+
+<details>
+<summary><code><strong>「 点击展开 查看内容 」</strong></code></summary>
+
+****
+
+为了方便，我是在编译的时候将版本号写入代码中的 version 变量，因此你手动编译时，需要像下面这样在 `go build` 命令后面加上 `-ldflags` 参数来指定版本号：
+
+```bash
+go build -ldflags "-s -w -X main.version=v2.3.3"
+# 在 CloudflareSpeedTest 目录中通过命令行（例如 CMD、Bat 脚本）运行该命令，即可编译一个可在和当前设备同样系统、位数、架构的环境下运行的二进制程序（Go 会自动检测你的系统位数、架构）且版本号为 v2.3.3
+```
+
+如果想要在 Windows 64位系统下编译**其他系统、架构、位数**，那么需要指定 **GOOS** 和 **GOARCH** 变量。
+
+例如在 Windows 系统下编译一个适用于 **Linux 系统 amd 架构 64 位**的二进制程序：
+
+```bat
+SET GOOS=linux
+SET GOARCH=amd64
+go build -ldflags "-s -w -X main.version=v2.3.3"
+```
+
+例如在 Linux 系统下编译一个适用于 **Windows 系统 amd 架构 32 位**的二进制程序：
+
+```bash
+GOOS=windows
+GOARCH=386
+go build -ldflags "-s -w -X main.version=v2.3.3"
+```
+
+> 可以运行 `go tool dist list` 来查看当前 Go 版本支持编译哪些组合。
+
+****
+
+当然，为了方便批量编译，我会专门指定一个变量为版本号，后续编译直接调用该版本号变量即可。  
+同时，批量编译的话，还需要分开放到不同文件夹才行（或者文件名不同），需要加上 `-o` 参数指定。
+
+```bat
+:: Windows 系统下是这样：
+SET version=v2.3.3
+SET GOOS=linux
+SET GOARCH=amd64
+go build -o Releases\CloudflareST_linux_amd64\CloudflareST -ldflags "-s -w -X main.version=%version%"
+```
+
+```bash
+# Linux 系统下是这样：
+version=v2.3.3
+GOOS=windows
+GOARCH=386
+go build -o Releases/CloudflareST_windows_386/CloudflareST.exe -ldflags "-s -w -X main.version=${version}"
+```
+
+</details>
 
 ****
 

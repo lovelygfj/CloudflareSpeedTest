@@ -167,10 +167,15 @@ func downloadHandler(ip *net.IPAddr) float64 {
 		}
 		bufferRead, err := response.Body.Read(buffer)
 		if err != nil {
-			if err != io.EOF { // 文件下载完了，或因网络等问题导致链接中断，则退出循环（终止测速）
+			if err != io.EOF { // 如果文件下载过程中遇到报错（如 Timeout），且并不是因为文件下载完了，则退出循环（终止测速）
+				break
+			} else if contentLength == -1 { // 文件下载完成 且 文件大小未知，则退出循环（终止测速），例如：https://speed.cloudflare.com/__down?bytes=200000000 这样的，如果在 10 秒内就下载完成了，会导致测速结果明显偏低甚至显示为 0.00（下载速度太快时）
 				break
 			}
-			e.Add(float64(contentRead-lastContentRead) / (float64(nextTime.Sub(currentTime)) / float64(timeSlice)))
+			// 获取上个时间片
+			last_time_slice := timeStart.Add(timeSlice * time.Duration(timeCounter-1))
+			// 下载数据量 / (用当前时间 - 上个时间片/ 时间片)
+			e.Add(float64(contentRead-lastContentRead) / (float64(currentTime.Sub(last_time_slice)) / float64(timeSlice)))
 		}
 		contentRead += int64(bufferRead)
 	}
